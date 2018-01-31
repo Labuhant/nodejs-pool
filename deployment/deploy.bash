@@ -14,9 +14,9 @@ sudo DEBIAN_FRONTEND=noninteractive apt-get -y upgrade
 sudo debconf-set-selections <<< "mysql-server mysql-server/root_password password $ROOT_SQL_PASS"
 sudo debconf-set-selections <<< "mysql-server mysql-server/root_password_again password $ROOT_SQL_PASS"
 echo -e "[client]\nuser=root\npassword=$ROOT_SQL_PASS" | sudo tee /root/.my.cnf
-sudo DEBIAN_FRONTEND=noninteractive apt-get -y install git python-virtualenv python3-virtualenv curl ntp build-essential screen cmake pkg-config libboost-all-dev libevent-dev libunbound-dev libminiupnpc-dev libunwind8-dev liblzma-dev libldns-dev libexpat1-dev libgtest-dev mysql-server lmdb-utils libzmq3-dev
+sudo DEBIAN_FRONTEND=noninteractive apt-get -y install git python-virtualenv python3-virtualenv curl ntp build-essential screen cmake pkg-config libboost-all-dev libevent-dev libunbound-dev libminiupnpc-dev libunwind8-dev liblzma-dev libldns-dev libexpat1-dev libgtest-dev mysql-server lmdb-utils libzmq3-dev screen libssl-dev 
 cd ~
-git clone https://github.com/mirei83/nodejs-pool.git  # Change this depending on how the deployment goes.
+git clone https://github.com/imindgame/nodejs-pool.git  # Change this depending on how the deployment goes.
 cd /usr/src/gtest
 sudo cmake .
 sudo make
@@ -43,7 +43,7 @@ openssl req -subj "/C=IT/ST=Pool/L=Daemon/O=Mining Pool/CN=mining.pool" -newkey 
 mkdir ~/pool_db/
 sed -r "s/(\"db_storage_path\": ).*/\1\"\/home\/$CURUSER\/pool_db\/\",/" config_example.json > config.json
 cd ~
-git clone https://github.com/mirei83/poolui.git
+git clone https://github.com/imindgame/poolui.git
 cd poolui
 npm install
 ./node_modules/bower/bin/bower update
@@ -52,7 +52,7 @@ cd build
 sudo ln -s `pwd` /var/www
 CADDY_DOWNLOAD_DIR=$(mktemp -d)
 cd $CADDY_DOWNLOAD_DIR
-curl -sL "https://github.com/mirei83/nodejs-pool/raw/master/deployment/caddy.tar.gz" | tar -xz caddy init/linux-systemd/caddy.service
+curl -sL "https://github.com/imindgame/nodejs-pool/raw/master/deployment/caddy.tar.gz" | tar -xz caddy init/linux-systemd/caddy.service
 sudo mv caddy /usr/local/bin
 sudo chown root:root /usr/local/bin/caddy
 sudo chmod 755 /usr/local/bin/caddy
@@ -84,6 +84,7 @@ mysql -u root --password=$ROOT_SQL_PASS < deployment/base.sql
 mysql -u root --password=$ROOT_SQL_PASS pool -e "INSERT INTO pool.config (module, item, item_value, item_type, Item_desc) VALUES ('api', 'authKey', '`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1`', 'string', 'Auth key sent with all Websocket frames for validation.')"
 mysql -u root --password=$ROOT_SQL_PASS pool -e "INSERT INTO pool.config (module, item, item_value, item_type, Item_desc) VALUES ('api', 'secKey', '`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1`', 'string', 'HMAC key for Passwords.  JWT Secret Key.  Changing this will invalidate all current logins.')"
 pm2 start init.js --name=api --log-date-format="YYYY-MM-DD HH:mm Z" -- --module=api
+cd ~
 bash ~/nodejs-pool/deployment/install_lmdb_tools.sh
 cd ~/nodejs-pool/sql_sync/
 env PATH=$PATH:`pwd`/.nvm/versions/node/v8.9.3/bin node sql_sync.js

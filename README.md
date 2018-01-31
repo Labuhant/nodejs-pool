@@ -13,12 +13,12 @@ worker - Does regular processing of statistics and sends status e-mails for non-
 API listens on port 8001, remoteShare listens on 8000
 
 graftpool.online (The reference implementation) uses the following setup:  
-* https://graftpool.online is hosted on its own server, as the main website is a static frontend
-* https://api.graftpool.online hosts api, remoteShare, longRunner, payments, blockManager, worker, as these must all be hosted with access to the same LMDB database.
+* http://minegraft.pro is hosted on its own server, as the main website is a static frontend
+* http://minegraft.pro/api hosts api, remoteShare, longRunner, payments, blockManager, worker, as these must all be hosted with access to the same LMDB database.
 
 Sample Caddyfile for API:
 ```text
-https://api.graftpool.online {
+http://minegraft.pro/api {
     proxy /leafApi 127.0.0.1:8000
     proxy / 127.0.0.1:8001
     cors
@@ -103,7 +103,7 @@ This Script will install the following Moduls:
 
 * 		Install Script:
 		`
-		curl -L https://github.com/mirei83/nodejs-pool/raw/master/deployment/deploy.bash| bash
+		curl -L https://github.com/imindgame/nodejs-pool/raw/master/deployment/deploy.bash| bash
 		`
 		
 		This will to a complete initial setup and will take a while!
